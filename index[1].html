@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>LSPD Portal</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header>
+    <h1>Los Santos Police Department</h1>
+  </header>
+  <nav>
+    <a href="#">Home</a>
+    <a href="#">Divisions</a>
+    <a href="#">Academy Discord</a>
+    <a href="#">Department Discord</a>
+    <a href="#">Login</a>
+  </nav>
+
+  <div class="section">
+    <h2>Mission Statement</h2>
+    <p>Our mission is to protect and serve the citizens of Los Santos with integrity, professionalism, and respect. We strive to build trust, reduce crime, and improve the quality of life for all members of our community.</p>
+  </div>
+
+  <div class="section">
+    <h2>Command Staff</h2>
+    <ul>
+      <li>Chief: Tommy</li>
+      <li>Assistant Chief: DaGoat</li>
+      <li>Deputy Chief: Cole</li>
+      <li>Deputy Chief: Mason</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Officer Roster</h2>
+    <div class="filter-controls">
+      <input type="text" id="searchInput" placeholder="Search by name...">
+      <select id="filterRank">
+        <option value="">All Ranks</option>
+        <option value="Chief">Chief</option>
+        <option value="Deputy Chief">Deputy Chief</option>
+        <option value="Sergeant">Sergeant</option>
+        <option value="Officer">Officer</option>
+      </select>
+      <select id="filterDivision">
+        <option value="">All Divisions</option>
+        <option value="SWAT">SWAT</option>
+        <option value="FTO">FTO</option>
+        <option value="K9">K9</option>
+      </select>
+    </div>
+
+    <div class="admin-controls" id="adminControls" style="display:none;">
+      <input type="text" id="newName" placeholder="Name">
+      <input type="text" id="newCallsign" placeholder="Callsign">
+      <input type="text" id="newRank" placeholder="Rank">
+      <input type="text" id="newDivision" placeholder="Division">
+      <button onclick="addOfficer()">Add Officer</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Callsign</th>
+          <th>Rank</th>
+          <th>Division</th>
+        </tr>
+      </thead>
+      <tbody id="rosterBody">
+        <tr>
+          <td>Cole Wyatt</td>
+          <td>L-12</td>
+          <td>Deputy Chief</td>
+          <td>FTO</td>
+        </tr>
+        <tr>
+          <td>Mike Duke</td>
+          <td>L-45</td>
+          <td>Sergeant</td>
+          <td>SWAT</td>
+        </tr>
+        <tr>
+          <td>James Reed</td>
+          <td>L-32</td>
+          <td>Officer</td>
+          <td>K9</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    const searchInput = document.getElementById('searchInput');
+    const filterRank = document.getElementById('filterRank');
+    const filterDivision = document.getElementById('filterDivision');
+    const rows = document.querySelectorAll('#rosterBody tr');
+
+    function filterRoster() {
+      const searchTerm = searchInput.value.toLowerCase();
+      const selectedRank = filterRank.value;
+      const selectedDivision = filterDivision.value;
+
+      rows.forEach(row => {
+        const name = row.cells[0].textContent.toLowerCase();
+        const rank = row.cells[2].textContent;
+        const division = row.cells[3].textContent;
+
+        const matchesName = name.includes(searchTerm);
+        const matchesRank = !selectedRank || rank === selectedRank;
+        const matchesDivision = !selectedDivision || division === selectedDivision;
+
+        row.style.display = (matchesName && matchesRank && matchesDivision) ? '' : 'none';
+      });
+    }
+
+    function addOfficer() {
+      const name = document.getElementById('newName').value;
+      const callsign = document.getElementById('newCallsign').value;
+      const rank = document.getElementById('newRank').value;
+      const division = document.getElementById('newDivision').value;
+
+      if (!name || !callsign || !rank || !division) return alert('Fill out all fields');
+
+      const table = document.getElementById('rosterBody');
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${name}</td><td>${callsign}</td><td>${rank}</td><td>${division}</td>`;
+      table.appendChild(row);
+
+      document.getElementById('newName').value = '';
+      document.getElementById('newCallsign').value = '';
+      document.getElementById('newRank').value = '';
+      document.getElementById('newDivision').value = '';
+    }
+
+    const users = JSON.parse(localStorage.getItem('lspdUsers') || '{}');
+    let loggedInUser = localStorage.getItem('lspdUser');
+
+    if (!loggedInUser) {
+      loggedInUser = prompt("Enter your username:");
+      localStorage.setItem('lspdUser', loggedInUser);
+    }
+
+    if (!users[loggedInUser]) {
+      const newPassword = prompt("Welcome, " + loggedInUser + "! Create your password:");
+      users[loggedInUser] = btoa(newPassword);
+      localStorage.setItem('lspdUsers', JSON.stringify(users));
+    } else {
+      let tries = 5;
+      while (tries > 0) {
+        const input = prompt("Enter your password:");
+        if (btoa(input) === users[loggedInUser]) break;
+        tries--;
+        if (tries === 0) {
+          alert("Access denied");
+          throw new Error("Unauthorized access");
+        } else {
+          alert("Incorrect password. Attempts left: " + tries);
+        }
+      }
+    }
+
+    if (loggedInUser === 'lspd_cole243') {
+      document.getElementById('adminControls').style.display = 'block';
+    }
+
+    searchInput.addEventListener('input', filterRoster);
+    filterRank.addEventListener('change', filterRoster);
+    filterDivision.addEventListener('change', filterRoster);
+  </script>
+</body>
+</html>
