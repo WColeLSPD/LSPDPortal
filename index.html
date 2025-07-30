@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LSPD Officer Roster</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>LSPD Active Roster</h1>
+
+    <div id="filters">
+        <label for="filterDivision">Filter by Division:</label>
+        <select id="filterDivision" onchange="filterTable()">
+            <option value="">All</option>
+        </select>
+
+        <label for="filterRank">Filter by Rank:</label>
+        <select id="filterRank" onchange="filterTable()">
+            <option value="">All</option>
+        </select>
+    </div>
+
+    <table id="rosterTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Rank</th>
+                <th>Division</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <h2>Add Officer</h2>
+    <form id="addOfficerForm" onsubmit="addOfficer(); return false;">
+        <input type="text" id="name" placeholder="Name" required>
+        <input type="text" id="rank" placeholder="Rank" required>
+        <input type="text" id="division" placeholder="Division" required>
+        <button type="submit">Add</button>
+    </form>
+
+    <script src="script.js"></script>
+</body>
+</html>
